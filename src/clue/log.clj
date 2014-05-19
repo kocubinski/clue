@@ -15,6 +15,6 @@
 (defonce rotor-config
   (log/set-config!
     [:shared-appender-config :rotor]
-    {:path (str (env :project-root) "/log/log") :max-size 1000000 :backlog 10}))
+    {:path (str (env :project-dir) "/log/log") :max-size 1000000 :backlog 10}))
 
 
