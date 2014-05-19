@@ -1,4 +1,5 @@
 (ns clue.log
+  (:use [environ.core :only [env]])
   (:require [taoensso.timbre :as log]
             [taoensso.timbre.appenders.rotor :as rotor]))
 
@@ -14,6 +15,6 @@
 (defonce rotor-config
   (log/set-config!
     [:shared-appender-config :rotor]
-    {:path (str project-root "/log/practical.log") :max-size 1000000 :backlog 10}))
+    {:path (str (env :project-root) "/log/log") :max-size 1000000 :backlog 10}))
 
 
