@@ -1,4 +1,6 @@
 (ns clue.core
+  (:use
+   [ring.util.response :only [file-response]])
   (:require
    [net.cgrand.enlive-html :as html]
    [taoensso.timbre :as log]
@@ -15,6 +17,9 @@
     (if-let [body (:body page)]
       (merge resp page)
       (assoc resp :body page))))
+
+(defn serve-resource [req]
+  (-> req :uri (subs 1) clojure.java.io/resource .getPath file-response))
 
 (def ^:dynamic *session*)
 (def ^:dynamic *request*)

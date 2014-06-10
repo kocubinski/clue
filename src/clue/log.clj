@@ -3,6 +3,11 @@
   (:require [taoensso.timbre :as log]
             [taoensso.timbre.appenders.rotor :as rotor]))
 
+(defn project-dir []
+  (str
+   (.getPath (clojure.java.io/resource ""))
+   ".."))
+
 (defonce log-config
   (log/set-config!
    [:appenders :rotor]
@@ -15,6 +20,4 @@
 (defonce rotor-config
   (log/set-config!
     [:shared-appender-config :rotor]
-    {:path (str (env :project-dir) "/log/log") :max-size 1000000 :backlog 10}))
-
-
+    {:path (str (project-dir) "/log/log") :max-size 1000000 :backlog 10}))
