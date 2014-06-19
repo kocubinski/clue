@@ -9,5 +9,9 @@
 (defn console-log-raw [msg]
   (.log js/console msg))
 
-(defn ajax [data-url callback]
-  (xhr/send data-url callback))
+(defn ajax
+  ([{:keys [url callback method content headers] :or [method "POST"]}]
+     (xhr/send url
+               #(callback (.. % -target getResponseText))
+               method content #js {"Content-Type" "application/edn"}))
+  ([data-url callback] (xhr/send data-url callback)))

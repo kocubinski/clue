@@ -1,6 +1,6 @@
 (ns clue.core
   (:use
-   [ring.util.response :only [file-response]])
+   [ring.util.response :only [file-response content-type]])
   (:require
    [net.cgrand.enlive-html :as html]
    [taoensso.timbre :as log]
@@ -10,6 +10,18 @@
    [clj-time.format :as t-format]))
 
 ;; views
+
+(defn wrap-edn-response
+  "Middleware that converts responses with a map for a body into a JSON
+  response."
+  [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (if (map? (:body response))
+        (-> response
+            (content-type "application/edn")
+            (update-in [:body] pr-str))
+        response))))
 
 (defn response [page]
   (let [resp {:status 200
