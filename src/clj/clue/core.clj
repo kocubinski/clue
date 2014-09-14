@@ -1,6 +1,7 @@
 (ns clue.core
   (:use
-   [ring.util.response :only [file-response content-type]])
+   [ring.util.response :only [file-response content-type]]
+   [ring.middleware.stacktrace :only [wrap-stacktrace-web]])
   (:require
    [net.cgrand.enlive-html :as html]
    [taoensso.timbre :as log]
@@ -10,6 +11,34 @@
    [clj-time.format :as t-format]))
 
 ;; views
+
+(defmacro with-err-str
+  "Evaluates exprs in a context in which *err* is bound to a fresh
+  StringWriter.  Returns the string created by any nested printing
+  calls."
+  [& body]
+  `(let [s# (new java.io.StringWriter)]
+     (binding [*err* s#]
+       ~@body
+       (str s#))))
+
+(defn wrap-exception-log
+  [handler]
+  (fn [request]
+    (try
+      (handler request)
+      (catch Exception ex
+        (binding [io.aviso.exception/*fonts* nil]
+          (log/error (str (:uri request) "\n"
+                          (io.aviso.exception/format-exception ex)) "\n"
+                          (str-pprint request)))
+        (throw ex)))))
+
+(defn wrap-exception
+  [handler]
+  (-> handler
+      wrap-exception-log
+      wrap-stacktrace-web))
 
 (defn wrap-edn-response
   "Middleware that converts responses with a map for a body into a JSON
@@ -52,7 +81,7 @@
                              (map (fn [arg-name i]
                                     [arg-name `(nth ~args ~i)])
                                   arg-list (range))))
-             (log/debug (str-pprint *request*))
+             (log/debug (str (:uri *request*) "\n" (str-pprint *request*)))
              (assoc (response ~@body) :session *session*)))))))
 
 (defn set-session! [fn-update & args]

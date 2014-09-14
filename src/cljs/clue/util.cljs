@@ -12,6 +12,6 @@
 (defn ajax
   ([{:keys [url callback method content headers] :or [method "POST"]}]
      (xhr/send url
-               #(callback (.. % -target getResponseText))
+               #(callback (.. % -target))
                method content #js {"Content-Type" "application/edn"}))
   ([data-url callback] (xhr/send data-url callback)))
