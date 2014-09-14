@@ -10,6 +10,12 @@
    [clj-time.coerce :as t-coerce]
    [clj-time.format :as t-format]))
 
+(defn str-pprint [obj]
+  (let [w (java.io.StringWriter.)]
+    (do
+      (clojure.pprint/pprint obj w)
+      (.toString w))))
+
 ;; views
 
 (defmacro with-err-str
@@ -172,9 +178,3 @@
                        (cons f (step (rest s) (conj seen f))))))
                  xs seen)))]
     (step coll [])))
-
-(defn str-pprint [obj]
-  (let [w (java.io.StringWriter.)]
-    (do
-      (clojure.pprint/pprint obj w)
-      (.toString w))))
