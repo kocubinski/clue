@@ -18,6 +18,14 @@
 
 ;; views
 
+(defmacro log-time
+  [& body]
+  `(let [s# (new java.io.StringWriter)]
+     (binding [*out* s#]
+       (let [res# (time ~@body)]
+         (taoensso.timbre/debug (.toString s#))
+         res#))))
+
 (defmacro with-err-str
   "Evaluates exprs in a context in which *err* is bound to a fresh
   StringWriter.  Returns the string created by any nested printing
