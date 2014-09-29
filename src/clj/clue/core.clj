@@ -16,7 +16,13 @@
       (clojure.pprint/pprint obj w)
       (.toString w))))
 
-;; views
+(defmacro log-time
+  ([msg & body]
+     `(let [s# (new java.io.StringWriter)]
+        (binding [*out* s#]
+          (let [res# (time ~@body)]
+            (log/debug (str ~msg " " s#))
+            res#)))))
 
 (defmacro with-err-str
   "Evaluates exprs in a context in which *err* is bound to a fresh
@@ -129,7 +135,7 @@
   (nth coll (.nextInt random (count coll))))
 
 (def ^:private char-pool
-  (map char (concat (range 48 58) (range 66 92) (range 97 123))))
+  (map char (concat (range 48 58) (range 65 91) (range 97 123))))
 
 (def ^:private letter-pool
   (map char (range 97 123)))
