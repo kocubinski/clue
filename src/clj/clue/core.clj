@@ -17,19 +17,11 @@
       (.toString w))))
 
 (defmacro log-time
-  ([msg & body]
-     `(let [s# (new java.io.StringWriter)]
-        (binding [*out* s#]
-          (let [res# (time ~@body)]
-            (log/debug (str ~msg " " s#))
-            res#)))))
-
-(defmacro log-time
-  [& body]
+  [msg & body]
   `(let [s# (new java.io.StringWriter)]
      (binding [*out* s#]
        (let [res# (time ~@body)]
-         (taoensso.timbre/debug (.toString s#))
+         (log/debug (str ~msg " " s#))
          res#))))
 
 (defmacro with-err-str
@@ -192,3 +184,12 @@
                        (cons f (step (rest s) (conj seen f))))))
                  xs seen)))]
     (step coll [])))
+
+(defn map-path [path]
+  "Basically Server.MapPath, expects absolute path"
+  (-> path (subs 1) clojure.java.io/resource .getPath))
+
+(def project-root
+  (-> "css" clojure.java.io/resource .getPath
+      java.io.File. .getParent
+      java.io.File. .getParent))
