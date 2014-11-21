@@ -72,7 +72,8 @@
       (assoc resp :body page))))
 
 (defn serve-resource [req]
-  (-> req :uri (subs 1) clojure.java.io/resource .getPath file-response))
+  (let [path (str "public" (:uri req))]
+    (-> path clojure.java.io/resource .getPath file-response)))
 
 (def ^:dynamic *session*)
 (def ^:dynamic *request*)
@@ -93,7 +94,7 @@
                              (map (fn [arg-name i]
                                     [arg-name `(nth ~args ~i)])
                                   arg-list (range))))
-             (log/debug (str (:uri *request*) "\n" (str-pprint *request*)))
+             ;;(log/debug (str (:uri *request*) "\n" (str-pprint *request*)))
              (assoc (response ~@body) :session *session*)))))))
 
 (defn set-session! [fn-update & args]
@@ -190,6 +191,6 @@
   (-> path (subs 1) clojure.java.io/resource .getPath))
 
 (def project-root
-  (-> "css" clojure.java.io/resource .getPath
+  (-> "public" clojure.java.io/resource .getPath
       java.io.File. .getParent
       java.io.File. .getParent))
