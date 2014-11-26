@@ -154,6 +154,7 @@
   ([end] (clojure.core/rand-int end))
   ([start end] (+ start (clojure.core/rand-int (- end start)))))
 
+(defn uuid [] (str (java.util.UUID/randomUUID)))
 
 ;; caching
 
